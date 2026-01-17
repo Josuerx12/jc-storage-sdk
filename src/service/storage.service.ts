@@ -1,11 +1,14 @@
 import type { Client } from "../client";
 import fs from "fs";
 import path from "path";
+import { Blob } from "buffer";
+import FormData from "form-data";
 
 export type UploadParams = {
-  filePath: string;
   bucket: string;
-  filename?: string;
+  buffer: Buffer;
+  filename: string;
+  mimeType: string;
   isPrivate?: boolean;
 };
 
@@ -35,16 +38,13 @@ export class StorageService {
   async upload(data: UploadParams): Promise<UploadResponse> {
     const form = new FormData();
 
-    const fileBuffer = fs.readFileSync(data.filePath);
-    const blob = new Blob([fileBuffer]);
+    const filename = data?.filename;
 
-    const filename = data?.filename ?? path.basename(data.filePath);
-
-    form.append("file", blob, filename);
+    form.append("file", data.buffer, { filename, contentType: data.mimeType });
     form.append("bucket", data.bucket);
     form.append(
       "isPrivate",
-      String(typeof data?.isPrivate === "boolean" ? data.isPrivate : false)
+      String(typeof data?.isPrivate === "boolean" ? data.isPrivate : false),
     );
     form.append("filename", filename);
 
@@ -62,7 +62,7 @@ export class StorageService {
 
   async getPrivateFileUrl(fileId: string): Promise<PrivateFileUrlResponse> {
     const res = await this.client.httpClient.get(
-      `/files/${fileId}/generate-signed-url`
+      `/files/${fileId}/generate-signed-url`,
     );
     return {
       url: res.data?.url,
