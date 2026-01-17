@@ -1,12 +1,9 @@
 import type { Client } from "../client";
-import fs from "fs";
-import path from "path";
-import { Blob } from "buffer";
 import FormData from "form-data";
 
 export type UploadParams = {
   bucket: string;
-  buffer: Buffer;
+  buffer: ArrayBuffer;
   filename: string;
   mimeType: string;
   isPrivate?: boolean;
@@ -38,7 +35,11 @@ export class StorageService {
   async upload(data: UploadParams): Promise<UploadResponse> {
     const form = new FormData();
 
-    const filename = data?.filename;
+    const ext = data.mimeType.split("/")[1];
+
+    const filename = data?.filename.includes(".")
+      ? data.filename
+      : `${data.filename}.${ext}`;
 
     form.append("file", data.buffer, { filename, contentType: data.mimeType });
     form.append("bucket", data.bucket);
