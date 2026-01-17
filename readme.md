@@ -28,10 +28,16 @@ const client = new Client({
 Faça upload de arquivos para um bucket específico:
 
 ```typescript
+import fs from "fs";
+
+// Ler o arquivo como Buffer
+const buffer = fs.readFileSync("/caminho/para/arquivo.jpg");
+
 const result = await client.storage().upload({
-  filePath: "/caminho/para/arquivo.jpg",
   bucket: "meu-bucket",
-  filename: "nome-personalizado.jpg", // opcional - se não informado, usa o nome original do arquivo
+  buffer: buffer,
+  filename: "nome-do-arquivo.jpg",
+  mimeType: "image/jpeg",
   isPrivate: false, // opcional - padrão: false
 });
 
@@ -39,7 +45,7 @@ console.log(result);
 // {
 //   file: {
 //     id: "uuid-do-arquivo",
-//     filename: "nome-personalizado.jpg",
+//     filename: "nome-do-arquivo.jpg",
 //     is_private: false,
 //     path: "caminho/no/storage",
 //     bucket_id: "uuid-do-bucket",
@@ -77,9 +83,10 @@ console.log(expires_at); // Data/hora de expiração da URL
 
 | Parâmetro   | Tipo      | Obrigatório | Descrição                                                |
 | ----------- | --------- | ----------- | -------------------------------------------------------- |
-| `filePath`  | `string`  | ✅          | Caminho local do arquivo a ser enviado                   |
 | `bucket`    | `string`  | ✅          | Nome do bucket de destino                                |
-| `filename`  | `string`  | ❌          | Nome personalizado para o arquivo (padrão: nome original)|
+| `buffer`    | `Buffer`  | ✅          | Buffer contendo os dados do arquivo                      |
+| `filename`  | `string`  | ✅          | Nome do arquivo                                          |
+| `mimeType`  | `string`  | ✅          | Tipo MIME do arquivo (ex: `image/jpeg`, `application/pdf`) |
 | `isPrivate` | `boolean` | ❌          | Define se o arquivo é privado (padrão: `false`)          |
 
 ## Licença
