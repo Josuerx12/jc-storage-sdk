@@ -9,4 +9,5 @@ export default defineConfig({
   minify: false,
   target: "node18",
   splitting: false,
+  external: [/node_modules/],
 });

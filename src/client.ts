@@ -1,10 +1,22 @@
-import type { AxiosInstance } from "axios";
+import type { AxiosInstance, AxiosError } from "axios";
 import axios from "axios";
 import { StorageService } from "./service/storage.service";
 
 export interface ClientOptions {
   accessKey: string;
   secretKey: string;
+}
+
+export class StorageError extends Error {
+  public statusCode: number;
+  public response: unknown;
+
+  constructor(message: string, statusCode: number, response?: unknown) {
+    super(message);
+    this.name = "StorageError";
+    this.statusCode = statusCode;
+    this.response = response;
+  }
 }
 
 export class Client {
@@ -23,6 +35,17 @@ export class Client {
         Accept: "application/json",
       },
     });
+
+    this.httpClient.interceptors.response.use(
+      (response) => response,
+      (error: AxiosError) => {
+        const statusCode = error.response?.status || 500;
+        const responseData = error.response?.data as { message?: string } | undefined;
+        const message = responseData?.message || error.message || "Unknown error";
+
+        throw new StorageError(message, statusCode, responseData);
+      }
+    );
   }
 
   public storage() {

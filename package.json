@@ -1,6 +1,6 @@
 {
   "name": "jc-storage-sdk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "SDK para JC Storage",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -25,11 +25,12 @@
     "build": "tsup",
     "prepublishOnly": "npm run build"
   },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "form-data": "^4.0.0"
+  },
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "axios": "^1.13.2"
   }
 }
