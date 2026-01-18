@@ -40,11 +40,14 @@ export class Client {
       (response) => response,
       (error: AxiosError) => {
         const statusCode = error.response?.status || 500;
-        const responseData = error.response?.data as { message?: string } | undefined;
-        const message = responseData?.message || error.message || "Unknown error";
+        const responseData = error.response?.data as
+          | { message?: string }
+          | undefined;
+        const message =
+          responseData?.message || error.message || "Unknown error";
 
         throw new StorageError(message, statusCode, responseData);
-      }
+      },
     );
   }
 
